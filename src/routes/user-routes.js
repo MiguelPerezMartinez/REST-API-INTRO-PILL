@@ -5,33 +5,20 @@ const { userController } = require("../controllers");
 
 const userRouter = Router();
 
-//get by id
-userRouter.get("/:id", (req, res) => {
-  //Response ok con mensaje
-  res.status(200).send({
-    message: "Hello world",
-  });
-});
+//get user
+userRouter.get("/:id", userController.getUser);
 
 //get all
 userRouter.get("/", userController.getUsers);
 
-userRouter.post("/", /*authMiddleware,*/ userController.register);
+//register new user
+userRouter.post("/register", userController.register);
 
-userRouter.patch("/", (req, res) => {
-  //Response ok con mensaje
-  res.status(200).send({
-    message: "Hello world",
-  });
-});
+//authenticate user
+userRouter.post("/authenticate", userController.authenticate);
 
-userRouter.delete("/:id", (req, res) => {
-  //Response ok con mensaje
-  res.status(200).send({
-    message: "Hello world",
-  });
-});
+userRouter.patch("/:id", userController.updateUser);
 
-module.exports = {
-  userRouter: userRouter,
-};
+userRouter.delete("/:id", userController.deleteUser);
+
+module.exports = userRouter;

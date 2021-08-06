@@ -6,7 +6,7 @@ const UserSchema = Schema(
   {
     name: {
       type: String,
-      unique: true,
+      required: [true, "The name is required"],
     },
     lastName: {
       type: String,
@@ -24,7 +24,13 @@ const UserSchema = Schema(
     },
     password: {
       type: String,
-      unique: true,
+      required: [true, "The password is required"],
+      trim: true,
+    },
+    admin: {
+      type: Boolean,
+      required: [true, "Is admin? Is required"],
+      default: false,
     },
   },
 

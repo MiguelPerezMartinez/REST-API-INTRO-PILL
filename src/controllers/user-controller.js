@@ -1,20 +1,40 @@
 const db = require("../models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const { config } = require("../config");
+
+async function comparePassword(receivedPassword, userPassword) {
+  const comparedPassword = await bcrypt.compare(receivedPassword, userPassword);
+  return comparedPassword;
+}
+
+function getToken(savedUser) {
+  return jwt.sign({ id: savedUser._id }, config.encrypt.secret, {
+    expiresIn: 86400, // 24 horas
+  });
+}
 
 async function register(req, res) {
   const { name, lastName, email, password, admin } = req.body;
 
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   try {
-    const { _id } = await db.userModel.create({
+    const savedUser = await db.userModel.create({
       name: name,
       lastName: lastName,
       email: email,
-      password: password,
+      password: hashedPassword,
       admin: admin,
     });
 
+    const token = getToken(savedUser);
+
     return res.status(201).send({
       message: "User created...",
-      id: _id,
+      id: savedUser._id,
+      token: token,
     });
   } catch (err) {
     return res.status(500).send({
@@ -26,23 +46,20 @@ async function register(req, res) {
 
 async function authenticate(req, res) {
   const { email, password } = req.body;
-  try {
-    const user = await db.userModel.find({ email: email });
-    if (user[0].email === email) {
-      console.log(user.email);
-      if (user[0].password === password) {
-        console.log(user.password);
-        return res.status(200).send({
-          user: user,
-        });
-      }
-    }
+
+  const user = await db.userModel.find({ email });
+  const hashedPassword = await comparePassword(password, user[0].password);
+
+  if (!hashedPassword)
     return res.status(403).send({
-      message: "Incorrect user or password",
+      message: "Incorrect password",
     });
-  } catch (err) {
-    return res.status(500).send("Error");
-  }
+
+  const token = await getToken(user[0]);
+
+  return res.status(200).send({
+    token: token,
+  });
 }
 
 async function getUsers(req, res) {
@@ -71,6 +88,11 @@ async function getUser(req, res) {
 async function updateUser(req, res) {
   const id = req.params.id;
   const body = req.body;
+
+  if (body.password) {
+    body.password = await bcrypt.hash(body.password, 10);
+  }
+
   try {
     const user = await db.userModel.update({ _id: id }, { $set: body });
     return res.status(200).send(`User ${id} updated correctly`);

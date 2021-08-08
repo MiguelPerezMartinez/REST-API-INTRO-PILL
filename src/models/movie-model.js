@@ -23,16 +23,18 @@ const MovieSchema = Schema(
       type: String,
       trim: true,
     },
-    cast: {
-      type: Array,
-      required: [true, "At least one actor/actrees is required"],
-      trim: true,
-    },
-    crew: {
-      type: Array,
-      required: [true, "At least one crew member is required"],
-      trim: true,
-    },
+    cast: [
+      {
+        ref: "persons",
+        type: Schema.Types.ObjectId,
+      },
+    ],
+    crew: [
+      {
+        ref: "persons",
+        type: Schema.Types.ObjectId,
+      },
+    ],
   },
 
   {

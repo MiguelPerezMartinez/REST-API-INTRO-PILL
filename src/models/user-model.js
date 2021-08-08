@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 const { isEmail } = require("validator");
+const bcrypt = require("bcrypt");
+
+const { config } = require("../config");
 
 const UserSchema = Schema(
   {
@@ -38,6 +41,15 @@ const UserSchema = Schema(
     timestamps: true,
   },
 );
+
+// UserSchema.statics.encryptPassword = async (password) => {
+//   const salt = await bcrypt.genSalt(10);
+//   return await bcrypt.hash(password, config.encrypt.salt);
+// };
+
+// UserSchema.statics.comparePassword = async (password, receivedPassword) => {
+//   return await bcrypt.compare(password, receivedPassword);
+// };
 
 const userModel = mongoose.model("users", UserSchema);
 

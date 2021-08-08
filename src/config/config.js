@@ -14,6 +14,8 @@ const {
   ENCRYPTION_SALT_PRODUCTION,
 } = process.env;
 
+const ENV = NODE_ENV || "development";
+
 const CONFIG = {
   production: {
     app: {
@@ -24,6 +26,7 @@ const CONFIG = {
     },
     encrypt: {
       salt: ENCRYPTION_SALT_PRODUCTION, //valor de encryptacion
+      secret: ACCESS_TOKEN_SECRET,
     },
   },
   development: {
@@ -35,6 +38,7 @@ const CONFIG = {
     },
     encrypt: {
       salt: ENCRYPTION_SALT_DEVELOPMENT, //valor de encryptacion
+      secret: ACCESS_TOKEN_SECRET,
     },
   },
   test: {
@@ -46,10 +50,9 @@ const CONFIG = {
     },
     encrypt: {
       salt: ENCRYPTION_SALT_DEVELOPMENT, //valor de encryptacion
+      secret: ACCESS_TOKEN_SECRET,
     },
   },
 };
 
-module.exports = {
-  config: CONFIG[NODE_ENV],
-};
+module.exports = CONFIG[ENV];

@@ -1,7 +1,6 @@
 //User routes
 const Router = require("express").Router;
 const { userController } = require("../controllers");
-// const authMiddleware = require("../middlewares/auth-middleware");
 
 const userRouter = Router();
 
